@@ -1,7 +1,6 @@
 import './App.css'
 import { Form } from './Form'
 
-//test commit
 const nodeSchema = {
 	nodes: [
 		{
@@ -19,7 +18,7 @@ const nodeSchema = {
 			// ADDITION: for 'button'
 			click: String, // DEFAULT = 'button': 'button' || 'submit' || 'reset'
 
-			// UI attributes. Must initialize = {} at least
+			// UI attributes
 			ui: {
 				width: Number, // min = 1 - max = 12
 				variant: String, // 'contained' 'outlined' 'text',
@@ -27,10 +26,14 @@ const nodeSchema = {
 				padding: Number,
 				// ...
 			},
+
+			// Validation
 			validate: {
-				minLength: Number,
-				maxLength: Number,
+				returnType: String, // 'string', 'number', 'boolean', 'date', 'array', 'object'
 				required: Boolean, // DEFAULT: false (exclude 'button', 'radio', 'select')
+				min: Number,
+				max: Number,
+				matches: RegExp, // for 'string'
 			},
 		},
 	],
@@ -44,6 +47,11 @@ const sampleNodes = [
 			width: 8,
 			margin: 1,
 		},
+		validate: {
+			returnType: 'string',
+			min: 3,
+			matches: /^[\w-.]+@([\w-]+\.)+[\w-]/,
+		},
 	},
 	{
 		key: 'password',
@@ -51,6 +59,10 @@ const sampleNodes = [
 		ui: {
 			variant: 'filled',
 			margin: 1,
+		},
+		validate: {
+			returnType: 'string',
+			min: 3,
 		},
 	},
 	{
@@ -72,6 +84,10 @@ const sampleNodes = [
 				label: 'Female',
 			},
 		],
+		validate: {
+			returnType: 'string',
+			required: true,
+		},
 	},
 	{
 		key: 'checkboxGroup',
@@ -92,6 +108,10 @@ const sampleNodes = [
 				label: 'Female',
 			},
 		],
+		validate: {
+			returnType: 'array',
+			max: 1,
+		},
 	},
 	{
 		key: 'selectGroup',
@@ -138,15 +158,10 @@ const sampleNodes = [
 	},
 ]
 
-const validate = (values) => {
-	const errors = {}
-	return errors
-}
-
 function App() {
 	return (
 		<div className='App'>
-			<Form nodes={sampleNodes} validate={validate} />
+			<Form nodes={sampleNodes} />
 		</div>
 	)
 }

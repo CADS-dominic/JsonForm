@@ -16,19 +16,73 @@ import {
 	Checkbox,
 } from '@mui/material'
 import { useFormik } from 'formik'
+import * as Yup from 'yup'
+
+const yup = (node) => {
+	try {
+		switch (node.validate.returnType) {
+			case 'string':
+				return node.validate.required
+					? Yup.string()
+							.min(node.validate.min || 0)
+							.max(node.validate.max || 10000)
+							.matches(node.validate.matches || /[\s\S]*/, 'Not match!')
+							.required()
+					: Yup.string()
+							.min(node.validate.min || 0)
+							.max(node.validate.max || 10000)
+							.matches(node.validate.matches || /[\s\S]*/, 'Not match!')
+			case 'number':
+				return node.validate.required
+					? Yup.number()
+							.min(node.validate.min || 0)
+							.max(node.validate.max || 10000)
+							.required()
+					: Yup.string()
+							.min(node.validate.min || 0)
+							.max(node.validate.max || 10000)
+			case 'bool':
+				return node.validate.required ? Yup.bool().required() : Yup.bool()
+			case 'array':
+				return node.validate.required
+					? Yup.array()
+							.min(node.validate.min || 0)
+							.max(node.validate.max || 10000)
+							.required()
+					: Yup.array()
+							.min(node.validate.min || 0)
+							.max(node.validate.max || 10000)
+			case 'date':
+				return node.validate.required ? Yup.date().required() : Yup.date()
+			case 'object':
+				return node.validate.required ? Yup.object().required() : Yup.object()
+			default:
+				return
+		}
+	} catch (error) {}
+}
 
 export const Form = ({ nodes, validate }) => {
 	let initialValues = {}
-	for (const element of nodes) {
-		if (element.type !== 'group' && element.type !== 'button') {
-			initialValues[element.key] = ''
+	let shape = {}
+	for (const node of nodes) {
+		if (node.childrenType === 'checkbox') {
+			initialValues[node.key] = []
+		} else {
+			if (node.type === 'slider') {
+				initialValues[node.key] = 0
+			} else {
+				initialValues[node.key] = ''
+			}
 		}
+		shape[node.key] = yup(node)
 	}
+	const formSchema = Yup.object().shape(shape)
 	const formik = useFormik({
 		initialValues,
-		validate,
+		validationSchema: formSchema,
 		onSubmit: (values) => {
-			console.log(values)
+			console.log(Date(), values)
 		},
 	})
 	return (
@@ -87,11 +141,24 @@ export const Form = ({ nodes, validate }) => {
 													})}
 												</RadioGroup>
 											) : (
-												<FormGroup name={node.key} onChange={formik.handleChange}>
+												<FormGroup name={node.key}>
 													{node.children.map((child) => (
 														<FormControlLabel
 															name={child.key}
-															control={<Checkbox />}
+															control={
+																<Checkbox
+																	onClick={() => {
+																		const index = formik.initialValues[`${node.key}`].findIndex(
+																			(result) => result === child.key
+																		)
+																		if (index === -1) {
+																			formik.initialValues[`${node.key}`].push(child.key)
+																		} else {
+																			formik.initialValues[`${node.key}`].splice(index, 1)
+																		}
+																	}}
+																/>
+															}
 															label={child.label || child.key}
 														/>
 													))}
@@ -107,7 +174,7 @@ export const Form = ({ nodes, validate }) => {
 										id={node.key}
 										name={node.key}
 										aria-label='Volume'
-										value={formik.values[`${node.key}`]}
+										value={parseInt(formik.values[`${node.key}`])}
 										onChange={formik.handleChange}
 										sx={{ m: node.ui.margin, p: node.ui.padding }}
 									/>
@@ -138,6 +205,7 @@ export const Form = ({ nodes, validate }) => {
 											id={node.key}
 											label={node.label || node.key}
 											fullWidth={true}
+											name={node.key}
 											onChange={formik.handleChange}
 											value={formik.values[`${node.key}`]}
 											type={node.type}
