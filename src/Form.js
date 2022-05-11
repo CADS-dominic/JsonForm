@@ -14,10 +14,15 @@ import {
 	MenuItem,
 	FormGroup,
 	Checkbox,
-	Typography,
+	Autocomplete,
 } from '@mui/material'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+
+const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
+const checkedIcon = <CheckBoxIcon fontSize='small' />
 
 const yup = (node) => {
 	try {
@@ -67,7 +72,7 @@ const initialize = (nodes) => {
 	let initialValues = {}
 	let shape = {}
 	for (const node of nodes) {
-		if (node.childrenType === 'checkbox') {
+		if (node.childrenType === 'checkbox' || node.type === 'autocomplete') {
 			initialValues[node.key] = []
 		} else if (node.type === 'slider') {
 			initialValues[node.key] = 0
@@ -127,9 +132,7 @@ export const Form = ({ nodes }) => {
 														</MenuItem>
 													))}
 												</Select>
-												<Typography>
-													{formik.errors[`${node.key}`] ? <div>{formik.errors[`${node.key}`]}</div> : null}
-												</Typography>
+												{formik.errors[`${node.key}`] ? <div>{formik.errors[`${node.key}`]}</div> : null}
 											</FormControl>
 										) : (
 											<FormControl fullWidth sx={{ m: node.ui.margin, p: node.ui.padding }}>
@@ -172,9 +175,7 @@ export const Form = ({ nodes }) => {
 														))}
 													</FormGroup>
 												)}
-												<Typography>
-													{formik.errors[`${node.key}`] ? <div>{formik.errors[`${node.key}`]}</div> : null}
-												</Typography>
+												{formik.errors[`${node.key}`] ? <div>{formik.errors[`${node.key}`]}</div> : null}
 											</FormControl>
 										)}
 									</Grid>
@@ -182,7 +183,7 @@ export const Form = ({ nodes }) => {
 							case 'slider':
 								return (
 									<Grid key={'gridItem' + node.key} item sm={node.ui.width || 12}>
-										<Typography>{node.label || node.key}</Typography>
+										{node.label || node.key}
 										<Slider
 											id={node.key}
 											key={node.key}
@@ -193,6 +194,33 @@ export const Form = ({ nodes }) => {
 										/>
 									</Grid>
 								)
+							case 'autocomplete': {
+								return node.multiple ? (
+									<Grid key={'gridItem' + node.key} item sm={node.ui.width || 12}>
+										<Autocomplete
+											multiple
+											options={node.options}
+											disableCloseOnSelect
+											getOptionLabel={(option) => option.label}
+											renderOption={(props, option, { selected }) => (
+												<li {...props}>
+													<Checkbox icon={icon} checkedIcon={checkedIcon} checked={selected} />
+													{option.label}
+												</li>
+											)}
+											renderInput={(params) => <TextField {...params} label={node.label || node.key} />}
+										/>
+									</Grid>
+								) : (
+									<Grid key={'gridItem' + node.key} item sm={node.ui.width || 12}>
+										<Autocomplete
+											disablePortal
+											options={node.options}
+											renderInput={(params) => <TextField {...params} label={node.label || node.label} />}
+										/>
+									</Grid>
+								)
+							}
 							case 'date':
 								return (
 									<Grid key={'gridItem' + node.key} item sm={node.ui.width || 12}>
@@ -209,9 +237,7 @@ export const Form = ({ nodes }) => {
 											}}
 											sx={{ m: node.ui.margin, p: node.ui.padding }}
 										/>
-										<Typography>
-											{formik.errors[`${node.key}`] ? <div>{formik.errors[`${node.key}`]}</div> : null}
-										</Typography>
+										{formik.errors[`${node.key}`] ? <div>{formik.errors[`${node.key}`]}</div> : null}
 									</Grid>
 								)
 							default:
@@ -227,9 +253,7 @@ export const Form = ({ nodes }) => {
 											variant={node.ui.variant}
 											sx={{ m: node.ui.margin, p: node.ui.padding }}
 										/>
-										<Typography>
-											{formik.errors[`${node.key}`] ? <div>{formik.errors[`${node.key}`]}</div> : null}
-										</Typography>
+										{formik.errors[`${node.key}`] ? <div>{formik.errors[`${node.key}`]}</div> : null}
 									</Grid>
 								)
 						}

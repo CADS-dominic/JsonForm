@@ -5,7 +5,7 @@ const nodeSchema = {
 	nodes: [
 		{
 			key: String, // UNIQUE
-			type: String, // DEFAULT = 'text': 'email' || 'password' || 'text' || 'number' || 'date' || 'button' || 'group' || 'slider'
+			type: String, // DEFAULT = 'text': 'email' || 'password' || 'text' || 'number' || 'date' || 'button' || 'group' || 'slider' || 'autocomplete'
 			label: String, // DEFAULT = key
 
 			// ADDITION: for 'group'
@@ -14,6 +14,15 @@ const nodeSchema = {
 
 			// ADDITION: for 'button'
 			click: String, // DEFAULT = 'button': 'button' || 'submit' || 'reset'
+
+			// ADDITION: for 'autocomplete'
+			multiple: Boolean, // DEFAULT = false
+			options: [
+				{
+					id: String,
+					label: String,
+				},
+			], // List of options
 
 			// UI attributes. Must initialize {} at least
 			ui: {
@@ -148,12 +157,23 @@ const sampleNodes = [
 		},
 	},
 	{
+		key: 'autocomplete',
+		type: 'autocomplete',
+		label: 'Options',
+		multiple: true,
+		options: [
+			{ id: 1, label: 'option 1' },
+			{ id: 2, label: 'option 2' },
+			{ id: 3, label: 'option 3' },
+		],
+		ui: {},
+	},
+	{
 		key: 'button',
 		type: 'button',
 		click: 'submit',
 		label: 'login',
 		ui: {
-			width: 12,
 			margin: 1,
 		},
 	},
