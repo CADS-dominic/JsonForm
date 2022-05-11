@@ -5,20 +5,17 @@ const nodeSchema = {
 	nodes: [
 		{
 			key: String, // UNIQUE
-
-			// DEFAULT = 'text': 'email' || 'password' || 'text' || 'number' || 'date' || 'button' || 'group' || 'slider'
-			type: String,
-
+			type: String, // DEFAULT = 'text': 'email' || 'password' || 'text' || 'number' || 'date' || 'button' || 'group' || 'slider'
 			label: String, // DEFAULT = key
 
 			// ADDITION: for 'group'
 			children: Array, // REQUIRED: specify children node of group
-			childrenType: String, // || 'checkbox' || 'radio' || 'select'
+			childrenType: String, // REQUIRED: 'checkbox' || 'radio' || 'select'
 
 			// ADDITION: for 'button'
 			click: String, // DEFAULT = 'button': 'button' || 'submit' || 'reset'
 
-			// UI attributes
+			// UI attributes. Must initialize {} at least
 			ui: {
 				width: Number, // min = 1 - max = 12
 				variant: String, // 'contained' 'outlined' 'text',
@@ -43,8 +40,8 @@ const sampleNodes = [
 	{
 		key: 'text',
 		type: 'text',
+		label: 'Username',
 		ui: {
-			width: 8,
 			margin: 1,
 		},
 		validate: {
@@ -68,7 +65,7 @@ const sampleNodes = [
 	{
 		key: 'radioGroup',
 		type: 'group',
-		label: 'radio',
+		label: 'Gender',
 		ui: {
 			margin: 1,
 			width: 6,
@@ -76,11 +73,11 @@ const sampleNodes = [
 		childrenType: 'radio',
 		children: [
 			{
-				key: 'radioMale',
+				key: 'radio1',
 				label: 'Male',
 			},
 			{
-				key: 'radioFemale',
+				key: 'radio2',
 				label: 'Female',
 			},
 		],
@@ -92,7 +89,7 @@ const sampleNodes = [
 	{
 		key: 'checkboxGroup',
 		type: 'group',
-		label: 'checkbox',
+		label: 'Fav.',
 		childrenType: 'checkbox',
 		ui: {
 			margin: 1,
@@ -100,12 +97,12 @@ const sampleNodes = [
 		},
 		children: [
 			{
-				key: 'checkboxMale',
-				label: 'Male',
+				key: 'checkbox1',
+				label: 'Football',
 			},
 			{
-				key: 'checkboxFemale',
-				label: 'Female',
+				key: 'checkbox2',
+				label: 'Badminton',
 			},
 		],
 		validate: {
@@ -116,19 +113,19 @@ const sampleNodes = [
 	{
 		key: 'selectGroup',
 		type: 'group',
-		label: 'Select',
+		label: 'Year',
 		childrenType: 'select',
 		ui: {
 			margin: 1,
 		},
 		children: [
 			{
-				key: 'selectMale',
-				label: 'Male',
+				key: 'select1',
+				label: '2022',
 			},
 			{
-				key: 'selectFemale',
-				label: 'Female',
+				key: 'select2',
+				label: '2021',
 			},
 		],
 	},
@@ -138,10 +135,14 @@ const sampleNodes = [
 		ui: {
 			margin: 1,
 		},
+		validate: {
+			returnType: 'date',
+		},
 	},
 	{
 		key: 'slider',
 		type: 'slider',
+		label: 'Slider',
 		ui: {
 			margin: 1,
 		},
@@ -150,9 +151,9 @@ const sampleNodes = [
 		key: 'button',
 		type: 'button',
 		click: 'submit',
+		label: 'login',
 		ui: {
 			width: 12,
-			variant: 'contained',
 			margin: 1,
 		},
 	},
